@@ -41,12 +41,26 @@ export function fetchMovie(movieId) {
             mode: 'cors'
         }).then((response) => {
             if (!response.ok) {
+                if (response.status === 401) {
+                    // Authentication error - token expired or invalid
+                    console.error("Authentication error: Please login again");
+                    // Could dispatch an auth error action here if needed
+                } else {
+                    console.error(`Error fetching movie: ${response.statusText}`);
+                }
                 throw Error(response.statusText);
             }
             return response.json()
         }).then((res) => {
             dispatch(movieFetched(res));
-        }).catch((e) => console.log(e));
+        }).catch((e) => {
+            console.error(`Failed to fetch movie: ${e.message}`);
+            // Dispatch a failure action to prevent infinite loading state
+            dispatch({
+                type: actionTypes.FETCH_MOVIE_FAILURE,
+                error: e.message
+            });
+        });
     }
 }
 
@@ -61,8 +75,6 @@ export function fetchMovies() {
             },
             mode: 'cors'
         }).then((response) => {
-            //updated response
-            console.log(response)
             if (!response.ok) {
                 throw Error(response.statusText);
             }

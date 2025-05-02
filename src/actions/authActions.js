@@ -35,7 +35,11 @@ export function submitLogin(data) {
             localStorage.setItem('token', res.token);
 
             dispatch(userLoggedIn(data.username));
-        }).catch((e) => console.log(e));
+            return res;
+        }).catch((e) => {
+            console.log(e);
+            throw e;
+        });
     }
 }
 

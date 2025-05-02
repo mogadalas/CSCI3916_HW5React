@@ -1,56 +1,63 @@
-import React, { useState } from 'react';
+import React, { Component } from 'react';
 import { submitLogin } from '../actions/authActions';
-import { useDispatch } from 'react-redux';
+import { connect } from 'react-redux';
 import { Form, Button } from 'react-bootstrap';
+import { withRouter } from 'react-router-dom';
 
-function Login() {
-  const [details, setDetails] = useState({
-    username: '',
-    password: '',
-  });
+class Login extends Component {
 
-  const dispatch = useDispatch();
+    constructor(props) {
+        super(props);
+        this.updateDetails = this.updateDetails.bind(this);
+        this.login = this.login.bind(this);
 
-  const updateDetails = (event) => {
-    setDetails({
-      ...details,
-      [event.target.id]: event.target.value,
-    });
-  };
+        this.state = {
+            details:{
+                username: '',
+                password: ''
+            }
+        };
+    }
 
-  const login = (event) => {
-    event.preventDefault(); // Prevent form from refreshing the page
-    dispatch(submitLogin(details));
-  };
+    updateDetails(event){
+        let updateDetails = Object.assign({}, this.state.details);
 
-  return (
-    <div className="login-container">
-        <Form onSubmit={login} className='login-form bg-dark text-light p-4 rounded'> {/* Use onSubmit for the form */}
-        <Form.Group controlId="username" className="mb-3">
-            <Form.Label>Email</Form.Label>
-            <Form.Control
-            type="email"
-            placeholder="Enter email"
-            autoComplete="username"
-            value={details.username}
-            onChange={updateDetails}
-            />
-        </Form.Group>
+        updateDetails[event.target.id] = event.target.value;
+        this.setState({
+            details: updateDetails
+        });
+    }
 
-        <Form.Group controlId="password" className="mb-3">
-            <Form.Label>Password</Form.Label>
-            <Form.Control
-            type="password"
-            placeholder="Password"
-            autoComplete="current-password"
-            value={details.password}
-            onChange={updateDetails}
-            />
-        </Form.Group>
-        <Button type="submit">Sign in</Button> {/* Use type="submit" */}
-        </Form>
-    </div>
-  );
+    login() {
+        const {dispatch} = this.props;
+        dispatch(submitLogin(this.state.details))
+            .then(() => {
+                // Redirect to movies list after successful login
+                this.props.history.push('/movielist');
+            });
+    }
+
+    render(){
+        return (
+            <Form className='form-horizontal'>
+                <Form.Group controlId="username">
+                    <Form.Label>Email</Form.Label>
+                    <Form.Control onChange={this.updateDetails} value={this.state.details.username} type="email" placeholder="Enter email" />
+                </Form.Group>
+
+                <Form.Group controlId="password">
+                    <Form.Label>Password</Form.Label>
+                    <Form.Control onChange={this.updateDetails} value={this.state.details.password}  type="password" placeholder="Password" />
+                </Form.Group>
+                <Button onClick={this.login}>Sign in</Button>
+            </Form>
+        )
+    }
 }
 
-export default Login;
+const mapStateToProps = state => {
+    return {
+    }
+}
+
+export default withRouter(connect(mapStateToProps)(Login));

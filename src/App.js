@@ -1,23 +1,27 @@
+import React from 'react';
 import './App.css';
 import MovieHeader from './components/movieheader';
 import MovieList from './components/movielist';
 import Movie from './components/movie';
 import Authentication from './components/authentication';
-import {HashRouter, Routes,  Route} from 'react-router-dom';
+import {HashRouter, Route} from 'react-router-dom';
+import { Provider } from 'react-redux';
+import store from './stores/store';
 
 function App() {
   return (
     <div className="App">
-      <HashRouter> {/* The Router component */}
-        <MovieHeader />
-        <Routes>
-          <Route path="/" element={<MovieList />} />
-          <Route path="/movielist" element={<MovieList />}/>
-          <Route path="/movie/:movieId" element={<Movie />}/>
-          <Route path="/signin" element={<Authentication />}/>
-          {/*... other routes */}
-        </Routes>
-      </HashRouter>
+      <Provider store={store}>
+        <HashRouter>
+          <div>
+            <MovieHeader />
+            <Route exact path="/" render={()=><MovieList />}/>
+            <Route exact path="/movielist" render={()=><MovieList />}/>
+            <Route exact path="/movie/:movieId" render={()=><Movie />}/>
+            <Route path="/signin" render={()=><Authentication />}/>
+          </div>
+        </HashRouter>
+      </Provider>
     </div>
   );
 }

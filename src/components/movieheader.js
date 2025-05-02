@@ -1,46 +1,47 @@
-import React from 'react';
-import { Navbar, Nav } from 'react-bootstrap';
-import { NavLink } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { logoutUser } from "../actions/authActions";
+import React, { Component } from 'react';
+import {Navbar, Nav} from 'react-bootstrap';
+import {LinkContainer} from 'react-router-bootstrap';
+import {connect} from 'react-redux';
+import {logoutUser} from "../actions/authActions";
 
-function MovieHeader() {
-    const dispatch = useDispatch();
-    const loggedIn = useSelector((state) => state.auth.loggedIn);
-    const username = useSelector((state) => state.auth.username);
-    const selectedMovie = useSelector((state) => state.movie.selectedMovie);
-    
-    const logout = () => {
-        dispatch(logoutUser());
-    };
+class MovieHeader extends Component {
+    logout() {
+        this.props.dispatch(logoutUser());
+    }
 
-    return (
-        <div>
-            <Navbar expand="lg" bg="dark" variant="dark">
-                <Navbar.Brand as={NavLink} to="/">Movie App</Navbar.Brand> 
-                <Navbar.Toggle aria-controls="basic-navbar-nav" />
-                <Navbar.Collapse id="basic-navbar-nav">
-                <Nav className="ml-auto">
-                    <Nav.Link as={NavLink} to="/movielist" disabled={!loggedIn}> 
-                        Movie List
-                    </Nav.Link>
-                    <Nav.Link as={NavLink} to={'/movie/' + (selectedMovie? selectedMovie._id: '')} disabled={!loggedIn}>
-                        Movie Detail
-                    </Nav.Link>
-                    <Nav.Link as={NavLink} to="/signin"> 
-                        {loggedIn? (
-                        <span onClick={logout} style={{ cursor: 'pointer' }}>
-                            Logout
-                        </span>
-                        ): (
-                        'Login'
-                        )}
-                    </Nav.Link>
-                </Nav>
-                </Navbar.Collapse>
-            </Navbar>
-        </div>
-    );
+    render() {
+        return (
+            <div>
+                <Navbar expand="lg" bg="dark" variant="dark">
+                    <Navbar.Brand>
+                        Movie App
+                    </Navbar.Brand>
+                    <Navbar.Toggle aria-controls="basic-navbar-nav" />
+                    <Navbar.Collapse id="basic-navbar-nav">
+                    <Nav>
+                            <LinkContainer to="/movielist">
+                                <Nav.Link disabled={!this.props.loggedIn}>Movie List</Nav.Link>
+                            </LinkContainer>
+                            <LinkContainer to={'/movie/' + (this.props.selectedMovie ? this.props.selectedMovie._id : '')}>
+                                <Nav.Link disabled={!this.props.loggedIn}>Movie Detail</Nav.Link>
+                            </LinkContainer>
+                            <LinkContainer to="/signin">
+                                <Nav.Link>{this.props.loggedIn ? <button onClick={this.logout.bind(this)}>Logout</button> : 'Login'}</Nav.Link>
+                            </LinkContainer>
+                    </Nav>
+                    </Navbar.Collapse>
+                </Navbar>
+            </div>
+        )
+    }
 }
 
-export default MovieHeader;
+const mapStateToProps = state => {
+    return {
+        loggedIn : state.auth.loggedIn,
+        username : state.auth.username,
+        selectedMovie: state.movie.selectedMovie
+    }
+}
+
+export default connect(mapStateToProps)(MovieHeader);

@@ -1,53 +1,62 @@
-import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux'; // Import useSelector and useDispatch
+import React, { Component} from 'react';
+import { connect } from 'react-redux'
 import Login from './login';
 import Register from './register';
 import { logoutUser } from '../actions/authActions';
-import { Nav, Button } from 'react-bootstrap';
 
-const Authentication = () => {
-  const [activeTab, setActiveTab] = useState('login');
-  const dispatch = useDispatch(); 
+class Authentication extends Component {
 
-  // Retrieve Redux state values
-  const loggedIn = useSelector((state) => state.auth.loggedIn);
-  const username = useSelector((state) => state.auth.username);
+    constructor(){
+        super();
 
-  // Switch tabs when user selects a tab
-  const handleSelect = (selectedKey) => {
-    setActiveTab(selectedKey);
-  };
+        this.state = {
+            toggleReg: false
+        };
+    }
 
-  const logout = () => {
-    dispatch(logoutUser());
-  };
+    componentDidMount(){
 
-  const userNotLoggedIn = (
-    <div className="auth-container">
-      {/* Render Nav tabs */}
-      <Nav variant="tabs" activeKey={activeTab} onSelect={handleSelect} className="mb-3 dark-tabs justify-content-center">
-        <Nav.Item>
-          <Nav.Link eventKey="login">Login</Nav.Link>
-        </Nav.Item>
-        <Nav.Item>
-          <Nav.Link eventKey="register">Register</Nav.Link>
-        </Nav.Item>
-      </Nav>
-      {/* Conditionally render based on the active tab */}
-      {activeTab === 'register' ? <Register /> : <Login />}
-    </div>
-  );
+    }
 
-  const userLoggedIn = (
-    <div className="text-center">
-      Logged in as: {username}{' '}
-      <Button variant="outline-light" onClick={logout}>
-        Logout
-      </Button>
-    </div>
-  );
+    showLogin(){
+        this.setState({
+            toggleReg: false
+        });
+    }
 
-  return <div>{loggedIn ? userLoggedIn : userNotLoggedIn}</div>;
-};
+    showReg(){
+        this.setState({
+            toggleReg: true
+        });
+    }
 
-export default Authentication;
+    logout(){
+        this.props.dispatch(logoutUser());
+    }
+
+    render(){
+
+        const userNotLoggedIn = (
+            <div>
+                <button onClick={this.showLogin.bind(this)}>Login</button><button onClick={this.showReg.bind(this)}>Register</button>
+                { this.state.toggleReg ? <Register /> : <Login /> }
+            </div>
+        );
+        const userLoggedIn = (<div>Logged in as: {this.props.username} <button onClick={this.logout.bind(this)}>Logout</button></div>);
+
+        return (
+            <div>
+                {this.props.loggedIn ? userLoggedIn : userNotLoggedIn}
+            </div>
+        )
+    }
+}
+
+const mapStateToProps = state => {
+    return {
+        loggedIn: state.auth.loggedIn,
+        username: state.auth.username
+    }
+}
+
+export default connect(mapStateToProps)(Authentication)

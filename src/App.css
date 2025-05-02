@@ -1,5 +1,6 @@
 .App {
   text-align: center;
+  background-color: #f8f9fa;
 }
 
 .App-logo {
@@ -14,73 +15,27 @@
 }
 
 .App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  background-color: #f8f9fa;
+  height: 150px;
+  padding: 20px;
+  color: #333;
+}
+
+.App-title {
+  font-size: 1.5em;
+}
+
+.App-intro {
+  font-size: large;
 }
 
 .App-link {
   color: #61dafb;
 }
 
-.login-container {
-  display: flex;
-  justify-content: center;
-  background-color: #121212; /* Dark background */
-  padding: 1rem;
-}
-
-.register-container {
-  display: flex;
-  justify-content: center;
-  background-color: #121212; /* Dark background for the entire page */
-  padding: 1rem;
-}
-
-/* Styling for the form */
-.register-form {
-  width: 100%;
-  max-width: 400px; /* Limits the width of the form */
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-}
-
-/* Styling for the form itself */
-.login-form {
-  width: 100%;
-  max-width: 400px; /* Limits the form width */
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-}
-
-.auth-container {
-  max-width: 400px;
-  margin: 2rem auto;
-}
-
-/* Dark-themed tabs styling */
-.dark-tabs .nav-link {
-  background-color: #343a40; /* dark background */
-  color: #f8f9fa;          /* light text */
-  border: none;
-  border-bottom: 2px solid transparent;
-  margin: 0 5px;
-  padding: 10px 15px;
-}
-
-.dark-tabs .nav-link.active {
-  background-color: #495057; /* slightly lighter dark for active tab */
-  color: #ffffff;
-  border-bottom: 2px solid #007bff; /* blue underline for active tab */
-}
-
-.image {
-  height: 800px;      /* Set a consistent height */
-  width: auto;        /* Width adjusts to maintain aspect ratio */
-  object-fit: contain; /* Ensures the image scales to fit without cropping */
+.form-horizontal {
+  width: 40% !important;
+  margin-left: 30%
 }
 
 @keyframes App-logo-spin {
