@@ -3,9 +3,12 @@ import actionTypes from '../constants/actionTypes';
 const env = process.env;
 
 function moviesFetched(movies) {
+    // Check if the response has a 'movies' property (API returns {success: true, movies: [...]}
+    const movieArray = movies.movies || movies;
+    
     return {
         type: actionTypes.FETCH_MOVIES,
-        movies: movies
+        movies: movieArray
     }
 }
 
@@ -31,6 +34,7 @@ export function setMovie(movie) {
 
 export function fetchMovie(movieId) {
     return dispatch => {
+        console.log('Fetching movie details for ID:', movieId);
         return fetch(`${env.REACT_APP_API_URL}/movies/${movieId}?reviews=true`, {
             method: 'GET',
             headers: {
@@ -52,7 +56,11 @@ export function fetchMovie(movieId) {
             }
             return response.json()
         }).then((res) => {
-            dispatch(movieFetched(res));
+            console.log('Movie details response:', res);
+            // Check if the API returns the movie directly or nested in a property
+            const movieData = res.movie || res;
+            console.log('Processed movie data for redux:', movieData);
+            dispatch(movieFetched(movieData));
         }).catch((e) => {
             console.error(`Failed to fetch movie: ${e.message}`);
             // Dispatch a failure action to prevent infinite loading state
@@ -80,7 +88,8 @@ export function fetchMovies() {
             }
             return response.json()
         }).then((res) => {
+            console.log('API response for fetchMovies:', res);
             dispatch(moviesFetched(res));
-        }).catch((e) => console.log(e));
+        }).catch((e) => console.log('Error fetching movies:', e));
     }
 }
