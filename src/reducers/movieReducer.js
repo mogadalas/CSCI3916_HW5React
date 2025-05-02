@@ -11,9 +11,10 @@ const movieReducer = (state = initialState, action) => {
 
       switch(action.type) {
             case constants.FETCH_MOVIES:
+                  console.log('FETCH_MOVIES action received:', action);
                   updated['movies'] = action.movies;
-                  updated['selectedMovie'] = action.movies[0];
                   updated['error'] = null;
+                  console.log('Updated state after FETCH_MOVIES:', updated);
                   return updated;
             case constants.SET_MOVIE:
                   updated['selectedMovie'] = action.selectedMovie;

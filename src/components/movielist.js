@@ -28,17 +28,30 @@ class MovieList extends Component {
     }
 
     render() {
+        console.log('Props in MovieList:', this.props);
+        
         const MovieListTable = ({movieList}) => {
+            console.log('MovieListTable received movieList:', movieList);
+            
             if (!movieList) {
                 return <div className="text-center p-3"><h3>Loading....</h3></div>
             }
+
+            // Function to generate a color based on movie title
+            const generateColorFromTitle = (title) => {
+                const colors = ['#FF5733', '#33FF57', '#3357FF', '#F033FF', '#FF3333', '#33FFEC', '#FCFF33'];
+                const index = title ? title.charCodeAt(0) % colors.length : 0;
+                return colors[index];
+            };
             
             // Sort movies by rating (highest first)
-            const sortedMovies = [...movieList].sort((a, b) => {
-                const ratingA = a.rating || 0;
-                const ratingB = b.rating || 0;
+            const sortedMovies = Array.isArray(movieList) ? [...movieList].sort((a, b) => {
+                const ratingA = a.averageRating || a.rating || 0;
+                const ratingB = b.averageRating || b.rating || 0;
                 return ratingB - ratingA;
-            });
+            }) : [];
+
+            console.log('Sorted movies:', sortedMovies);
 
             return (
                 <Container className="mt-4">
@@ -49,6 +62,7 @@ class MovieList extends Component {
                                 <th style={{width: '120px'}}>Movie</th>
                                 <th>Title</th>
                                 <th>Rating</th>
+                                <th>Reviews</th>
                                 <th>Release Date</th>
                             </tr>
                         </thead>
@@ -56,17 +70,39 @@ class MovieList extends Component {
                             {sortedMovies.map((movie) =>
                                 <tr key={movie._id} style={{backgroundColor: '#121212'}}>
                                     <td>
-                                        {movie.imageUrl ? (
+                                        {/* Debug image properties */}
+                                        {console.log('Movie image properties:', {
+                                            id: movie._id,
+                                            title: movie.title,
+                                            imageUrl: movie.imageurl,
+                                            image: movie.image,
+                                            img: movie.img
+                                        })}
+                                        
+                                        {(movie.imageUrl || movie.image || movie.img) ? (
                                             <LinkContainer to={'/movie/'+movie._id} onClick={()=>this.handleClick(movie)}>
-                                                <Nav.Link><Image className="image" src={movie.imageUrl} thumbnail style={{width: '100px'}} /></Nav.Link>
+                                                <Nav.Link><Image className="image" src={movie.imageurl || movie.image || movie.img} thumbnail style={{width: '100px'}} /></Nav.Link>
                                             </LinkContainer>
                                         ) : (
-                                            <Image 
-                                                className="image" 
-                                                src="https://via.placeholder.com/100x150?text=No+Image" 
-                                                thumbnail 
-                                                style={{width: '100px', backgroundColor: '#343a40', border: '1px solid #6c757d'}} 
-                                            />
+                                            <LinkContainer to={'/movie/'+movie._id} onClick={()=>this.handleClick(movie)}>
+                                                <Nav.Link>
+                                                    {/* Use a colored div with the first letter of the movie title as fallback */}
+                                                    <div 
+                                                        className="d-flex justify-content-center align-items-center"
+                                                        style={{
+                                                            width: '50px', 
+                                                            height: '50px', 
+                                                            backgroundColor: generateColorFromTitle(movie.title),
+                                                            color: 'white',
+                                                            fontSize: '48px',
+                                                            fontWeight: 'bold',
+                                                            border: '1px solid #6c757d'
+                                                        }}
+                                                    >
+                                                        {movie.title ? movie.title.charAt(0) : '?'}
+                                                    </div>
+                                                </Nav.Link>
+                                            </LinkContainer>
                                         )}
                                     </td>
                                     <td className="align-middle">
@@ -75,12 +111,12 @@ class MovieList extends Component {
                                         </LinkContainer>
                                     </td>
                                     <td className="align-middle">
-                                        {movie.rating  }
+                                        {/* Remove the text-only rating display that's causing duplication */}
                                         {console.log('Movie data:', movie)}
                                         {/* Check various possible rating property names */}
                                         {(() => {
                                             // Try different possible property names for rating
-                                            const rating =   movie.rating  || 0;
+                                            const rating = movie.averageRating || movie.rating || 0;
                                             const starCount = Math.round(rating);
                                             
                                             return (
@@ -92,6 +128,9 @@ class MovieList extends Component {
                                                 </>
                                             );
                                         })()}
+                                    </td>
+                                    <td className="align-middle" style={{fontSize: '1.1rem', color: 'white'}}>
+                                        {movie.reviews ? movie.reviews.length : 0}
                                     </td>
                                     <td className="align-middle" style={{fontSize: '1.1rem', color: 'white'}}>{movie.releaseDate}</td>
                                 </tr>
